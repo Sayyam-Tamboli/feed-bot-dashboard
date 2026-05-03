@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   BarChart,
@@ -12,24 +13,17 @@ import {
   Cell,
   Legend,
 } from 'recharts';
-import { useApiKey } from '../context/ApiKeyContext';
 import { fetchFeedbackStats } from '../api/endpoints';
 import { StatCardSkeleton } from '../components/ui/Skeleton';
 import ApiKeySelector from '../components/shared/ApiKeySelector';
 
-const STATUS_COLORS = {
+const STATUS_COLORS: Record<string, string> = {
   Pending: '#eab308',
   Reviewed: '#3b82f6',
   Resolved: '#22c55e',
 };
 
-interface StatCardProps {
-  label: string;
-  value: number;
-  color: string;
-}
-
-function StatCard({ label, value, color }: StatCardProps) {
+function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{label}</p>
@@ -39,12 +33,13 @@ function StatCard({ label, value, color }: StatCardProps) {
 }
 
 export default function Dashboard() {
-  const { selectedKey } = useApiKey();
+  const [searchParams] = useSearchParams();
+  const apiKey = searchParams.get('apiKey') ?? '';
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['feedback-stats', selectedKey],
-    queryFn: () => fetchFeedbackStats(selectedKey),
-    enabled: !!selectedKey,
+    queryKey: ['feedback-stats', apiKey],
+    queryFn: () => fetchFeedbackStats(apiKey),
+    enabled: !!apiKey,
   });
 
   const typeChartData = [
@@ -59,7 +54,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6 max-w-6xl">
+    <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
@@ -68,7 +63,6 @@ export default function Dashboard() {
         <ApiKeySelector />
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => <StatCardSkeleton key={i} />)
@@ -82,13 +76,12 @@ export default function Dashboard() {
             <StatCard label="Feedback" value={stats.feedback} color="text-sky-600" />
           </>
         ) : (
-          <p className="col-span-6 text-sm text-gray-500 py-8 text-center">
-            Select an API key to view stats
+          <p className="col-span-6 text-sm text-gray-400 py-10 text-center">
+            Select a project to view stats
           </p>
         )}
       </div>
 
-      {/* Charts */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
@@ -120,10 +113,7 @@ export default function Dashboard() {
                   paddingAngle={3}
                 >
                   {statusChartData.map((entry, i) => (
-                    <Cell
-                      key={i}
-                      fill={STATUS_COLORS[entry.name as keyof typeof STATUS_COLORS]}
-                    />
+                    <Cell key={i} fill={STATUS_COLORS[entry.name] ?? '#6b7280'} />
                   ))}
                 </Pie>
                 <Tooltip />

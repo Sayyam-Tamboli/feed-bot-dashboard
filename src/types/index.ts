@@ -1,8 +1,7 @@
 export interface FeedbackResponseDTO {
   id: string;
   apiKey: string;
-  apiKeyName: string;
-  type: 'BUG' | 'FEEDBACK';
+  projectName: string | null;
   message: string;
   screenshotUrl: string | null;
   pageUrl: string | null;
@@ -15,16 +14,17 @@ export interface FeedbackResponseDTO {
 export interface BugResponseDTO {
   id: string;
   apiKey: string;
-  apiKeyName: string;
+  apiKeyName: string | null;
   description: string;
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  status: 'PENDING' | 'REVIEWED' | 'RESOLVED';
   createdAt: string;
 }
 
 export interface ApiKeyResponseDTO {
   id: string;
   apiKey: string;
-  name: string;
+  name: string | null;
   createdAt: string;
 }
 

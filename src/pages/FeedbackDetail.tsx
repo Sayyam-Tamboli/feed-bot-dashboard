@@ -5,14 +5,14 @@ import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { fetchFeedbackById, updateFeedbackStatus } from '../api/endpoints';
-import { StatusBadge, TypeBadge } from '../components/ui/Badge';
+import { StatusBadge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{label}</p>
-      <div className="text-sm text-gray-800">{children}</div>
+      <div className="text-sm text-gray-800 break-words">{children}</div>
     </div>
   );
 }
@@ -43,9 +43,7 @@ export default function FeedbackDetail() {
       <div className="max-w-3xl space-y-4">
         <Skeleton className="h-5 w-24" />
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-4 w-full" />
-          ))}
+          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-4 w-full" />)}
         </div>
       </div>
     );
@@ -79,24 +77,19 @@ export default function FeedbackDetail() {
             <h1 className="text-lg font-bold text-gray-900">Feedback Detail</h1>
             <p className="text-xs text-gray-400 font-mono mt-0.5">{item.id}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <TypeBadge type={item.type} />
-            <StatusBadge status={item.status} />
-          </div>
+          <StatusBadge status={item.status} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <Field label="API Key">{item.apiKeyName}</Field>
-          <Field label="Created At">
-            {format(parseISO(item.createdAt), 'PPpp')}
-          </Field>
+          <Field label="Project">{item.projectName ?? 'Unnamed Project'}</Field>
+          <Field label="Created At">{format(parseISO(item.createdAt), 'PPpp')}</Field>
           {item.pageUrl && (
             <Field label="Page URL">
               <a
                 href={item.pageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-blue-600 hover:underline break-all"
+                className="inline-flex items-center gap-1 text-blue-600 hover:underline"
               >
                 {item.pageUrl}
                 <ExternalLink size={12} className="shrink-0" />
@@ -106,13 +99,15 @@ export default function FeedbackDetail() {
           {item.browser && <Field label="Browser">{item.browser}</Field>}
           {item.userAgent && (
             <Field label="User Agent">
-              <span className="text-xs break-all text-gray-600">{item.userAgent}</span>
+              <span className="text-xs text-gray-600">{item.userAgent}</span>
             </Field>
           )}
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Message</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            Message
+          </p>
           <div className="bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
             {item.message}
           </div>
@@ -120,7 +115,9 @@ export default function FeedbackDetail() {
 
         {item.screenshotUrl && (
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Screenshot</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              Screenshot
+            </p>
             <img
               src={item.screenshotUrl}
               alt="Screenshot"
