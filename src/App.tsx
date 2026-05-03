@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { FeedBot } from '@stl-ai-org/feedbot';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import FeedbackList from './pages/FeedbackList';
@@ -7,10 +8,15 @@ import BugsList from './pages/BugsList';
 import BugDetail from './pages/BugDetail';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import PageLayout from './components/layout/PageLayout';
+import '@stl-ai-org/feedbot/dist/feedbot.css';
 
 export default function App() {
   return (
     <BrowserRouter>
+    <FeedBot 
+        apiKey="feed-dashboard-key"
+        position="bottom-right"
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
